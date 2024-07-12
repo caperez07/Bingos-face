@@ -1,7 +1,7 @@
 import PySimpleGUI as sg
 import cv2
 import numpy as np
-from PIL import Image, ImageTk
+from PIL import Image
 import random
 
 # Função para capturar frames do vídeo e convertê-los para um formato que o PySimpleGUI possa exibir
