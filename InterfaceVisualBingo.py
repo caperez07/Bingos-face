@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 import cv2
 import time
+import random
 
 # Função para capturar frames do vídeo e convertê-los para um formato que o PySimpleGUI possa exibir
 def get_frame(video_path):
@@ -19,6 +20,10 @@ normalBingo = 'videos/Normal_Bingo.gif'
 # Vídeos de reação específicos
 angryBingo = 'videos/Angry_Bingo.gif'
 sadBingo = 'videos/Sad_Bingo.gif'
+happyBingo = 'videos/Happy_Bingo.gif'
+
+# Juntando videos de clique rápido
+fastClick = [sadBingo, angryBingo]
 
 # Layout da interface principal com um elemento de imagem para exibir o vídeo
 layout = [
@@ -56,10 +61,10 @@ while True:
             click_duration = time.time() - mouse_down_time
             mouse_down_time = None
             if click_duration >= long_click_duration:
-                current_video = angryBingo  # Clique longo
+                current_video = happyBingo  # Clique longo
                 print("clique longo")
             else:
-                current_video = sadBingo  # Clique curto
+                current_video = random.choice(fastClick)  # Clique curto
                 print("clique rapido")
             frame_generator = get_frame(current_video)
             video_playing = True
