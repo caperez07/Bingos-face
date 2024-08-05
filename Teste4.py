@@ -15,10 +15,10 @@ def get_frame(video_path):
     cap.release()
 
 # Vídeo padrão
-default_video = 'videos/padraorobot.gif'
+normalBingo = 'videos/Normal_Bingo.gif'
 # Vídeos de reação específicos
-loverobot_video = 'videos/loverobot.gif'
-angryrobot_video = 'videos/angryrobot.gif'
+angryBingo = 'videos/Angry_Bingo.gif'
+sadBingo = 'videos/Sad_Bingo.gif'
 
 # Layout da interface principal com um elemento de imagem para exibir o vídeo
 layout = [
@@ -33,7 +33,7 @@ window['-IMAGE-'].bind('<ButtonPress-1>', '-MOUSEDOWN-')
 window['-IMAGE-'].bind('<ButtonRelease-1>', '-MOUSEUP-')
 
 # Inicializar o vídeo atual e o gerador de frames
-current_video = default_video
+current_video = normalBingo
 frame_generator = get_frame(current_video)
 
 # Variáveis para detectar clique longo
@@ -56,10 +56,10 @@ while True:
             click_duration = time.time() - mouse_down_time
             mouse_down_time = None
             if click_duration >= long_click_duration:
-                current_video = angryrobot_video  # Clique longo
+                current_video = angryBingo  # Clique longo
                 print("clique longo")
             else:
-                current_video = loverobot_video  # Clique curto
+                current_video = sadBingo  # Clique curto
                 print("clique rapido")
             frame_generator = get_frame(current_video)
             video_playing = True
@@ -70,7 +70,7 @@ while True:
         window['-IMAGE-'].update(data=frame)
     except StopIteration:
         # Quando o vídeo terminar, voltar ao vídeo padrão
-        current_video = default_video
+        current_video = normalBingo
         frame_generator = get_frame(current_video)
         video_playing = False
 
