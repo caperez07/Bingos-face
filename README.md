@@ -27,7 +27,7 @@ Siga os passos abaixo para instalar e configurar o ambiente necessário para rod
     pip install opencv-python
     ```
 
-3. Certifique-se de que os vídeos `padraorobot.gif`, `loverobot.gif`, e `angryrobot.gif` estão na pasta `videos`.
+3. Certifique-se de que os vídeos `normalBingo.gif`, `angryBingo.gif`, e `sadBingo.gif` estão na pasta `videos`.
 
 4. Rode o Teste4.py
 
