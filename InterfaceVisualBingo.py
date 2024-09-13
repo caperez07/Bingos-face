@@ -1,82 +1,109 @@
-import PySimpleGUI as sg
-import cv2
+import tkinter as tk
+from PIL import Image, ImageTk
+import imageio
 import time
 import random
+import threading
 
-# Função para capturar frames do vídeo e convertê-los para um formato que o PySimpleGUI possa exibir
-def get_frame(video_path):
-    cap = cv2.VideoCapture(video_path)
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-        frame = cv2.resize(frame, (640, 480))  # Ajustar o tamanho do frame se necessário
-        imgbytes = cv2.imencode('.png', frame)[1].tobytes()
-        yield imgbytes
-    cap.release()
+# Função para pré-carregar os frames dos vídeos
+def preload_frames(video_path, screen_width, screen_height):
+    reader = imageio.get_reader(video_path)
+    frames = []
+    for frame in reader:
+        img = Image.fromarray(frame)
+        img = img.resize((screen_width, screen_height))  # Redimensionar o frame para preencher a tela
+        img_tk = ImageTk.PhotoImage(img)
+        frames.append(img_tk)
+    reader.close()
+    return frames
+
+# Função para atualizar os frames
+def play_video():
+    global frame_index, video_playing, current_frames
+    if video_playing:
+        try:
+            frame = current_frames[frame_index]
+            label.config(image=frame)
+            label.image = frame
+            frame_index += 1
+            if frame_index >= len(current_frames):  # Termina o vídeo de clique e volta ao padrão
+                if current_frames != normal_frames:  # Se não for o vídeo padrão
+                    current_frames = normal_frames
+                    frame_index = 0
+                    enable_clicks()  # Habilitar cliques novamente após o vídeo acabar
+                else:
+                    frame_index = 0  # Loop para o vídeo padrão
+        except IndexError:
+            frame_index = 0
+
+    # Continuar rodando enquanto video_playing for True
+    root.after(20, play_video)
+
+# Função para desabilitar cliques
+def disable_clicks():
+    label.unbind("<ButtonPress-1>")
+    label.unbind("<ButtonRelease-1>")
+
+# Função para habilitar cliques
+def enable_clicks():
+    label.bind("<ButtonPress-1>", on_mouse_down)
+    label.bind("<ButtonRelease-1>", on_mouse_up)
 
 # Vídeo padrão
 normalBingo = 'videos/Normal_Bingo.gif'
-# Vídeos de reação específicos
 angryBingo = 'videos/Angry_Bingo.gif'
 sadBingo = 'videos/Sad_Bingo.gif'
 happyBingo = 'videos/Happy_Bingo.gif'
 
-# Juntando videos de clique rápido
 fastClick = [sadBingo, angryBingo]
 
-# Layout da interface principal com um elemento de imagem para exibir o vídeo
-layout = [
-    [sg.Image(filename='', key='-IMAGE-', enable_events=True)],  # Habilita eventos para o elemento de imagem
-]
+root = tk.Tk()
+root.attributes("-fullscreen", True)
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
 
-# Criar a janela principal
-window = sg.Window("Olhos de Robo", layout, finalize=True)
+label = tk.Label(root)
+label.pack()
 
-# Bind mouse down and mouse up events
-window['-IMAGE-'].bind('<ButtonPress-1>', '-MOUSEDOWN-')
-window['-IMAGE-'].bind('<ButtonRelease-1>', '-MOUSEUP-')
+# Pré-carregar frames dos vídeos
+normal_frames = preload_frames(normalBingo, screen_width, screen_height)
+angry_frames = preload_frames(angryBingo, screen_width, screen_height)
+sad_frames = preload_frames(sadBingo, screen_width, screen_height)
+happy_frames = preload_frames(happyBingo, screen_width, screen_height)
 
-# Inicializar o vídeo atual e o gerador de frames
-current_video = normalBingo
-frame_generator = get_frame(current_video)
+current_frames = normal_frames
+frame_index = 0
 
-# Variáveis para detectar clique longo
 mouse_down_time = None
 long_click_duration = 0.5  # Duração em segundos para considerar um clique longo
 
-# Variável de controle para verificar se um vídeo está sendo reproduzido
 video_playing = True
 
-# Loop de eventos
-while True:
-    event, values = window.read(timeout=20)  # Tempo de timeout para atualizar o vídeo
-    if event == sg.WIN_CLOSED:
-        break
-    elif event == '-IMAGE--MOUSEDOWN-':  # Detecta mouse down
-        mouse_down_time = time.time()
-        
-    elif event == '-IMAGE--MOUSEUP-':  # Detecta mouse up
-        if mouse_down_time is not None and not video_playing:
-            click_duration = time.time() - mouse_down_time
-            mouse_down_time = None
-            if click_duration >= long_click_duration:
-                current_video = happyBingo  # Clique longo
-                print("clique longo")
-            else:
-                current_video = random.choice(fastClick)  # Clique curto
-                print("clique rapido")
-            frame_generator = get_frame(current_video)
-            video_playing = True
+# Funções para detectar clique longo e curto
+def on_mouse_down(event):
+    global mouse_down_time
+    mouse_down_time = time.time()
 
-    try:
-        # Atualizar o frame no elemento de imagem
-        frame = next(frame_generator)
-        window['-IMAGE-'].update(data=frame)
-    except StopIteration:
-        # Quando o vídeo terminar, voltar ao vídeo padrão
-        current_video = normalBingo
-        frame_generator = get_frame(current_video)
-        video_playing = False
+def on_mouse_up(event):
+    global mouse_down_time, video_playing, current_frames, frame_index
+    if mouse_down_time is not None:
+        click_duration = time.time() - mouse_down_time
+        mouse_down_time = None
+        if click_duration >= long_click_duration:
+            current_frames = happy_frames  # Clique longo
+            print("clique longo")
+        else:
+            current_frames = random.choice([sad_frames, angry_frames])  # Clique curto
+            print("clique rápido")
 
-window.close()
+        disable_clicks()  # Desabilitar cliques enquanto o vídeo está rodando
+        frame_index = 0  # Reiniciar do início
+        video_playing = True
+
+label.bind("<ButtonPress-1>", on_mouse_down)
+label.bind("<ButtonRelease-1>", on_mouse_up)
+
+# Iniciar a reprodução do vídeo padrão
+root.after(20, play_video)
+
+root.mainloop()
