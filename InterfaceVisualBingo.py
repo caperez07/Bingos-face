@@ -51,6 +51,8 @@ def enable_clicks():
 
 # Vídeo padrão
 normalBingo = 'videos/Normal_Bingo.gif'
+
+# Reações
 angryBingo = 'videos/Angry_Bingo.gif'
 sadBingo = 'videos/Sad_Bingo.gif'
 happyBingo = 'videos/Happy_Bingo.gif'
