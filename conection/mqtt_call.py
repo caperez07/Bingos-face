@@ -1,5 +1,5 @@
 import asyncio
-from mqtt_connect.mqtt_test import send_mqtt
+from conection.mqtt_test import send_mqtt
 
 try:
     # Verifica se já existe um loop de evento em execução

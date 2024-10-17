@@ -21,9 +21,13 @@ async def send_mqtt():
     client.on_publish = on_publish
     client.on_message = on_message
 
-    # Conecta ao broker público HiveMQ
-    await client.connect('mqtt-dashboard.com')
-    client.subscribe('bitogay')
+    try:
+        # Conecta ao broker público HiveMQ
+        await client.connect('mqtt-dashboard.com')
+        client.subscribe('bitogay')
+        print("conectado")
+    except Exception as e:
+        print(f"Erro no envio MQTT: {e}")
 
     # print(client.on_message)
 
