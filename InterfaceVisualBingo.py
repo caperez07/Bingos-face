@@ -61,6 +61,7 @@ fastClick = [sadBingo, angryBingo]
 
 root = tk.Tk()
 root.attributes("-fullscreen", True)
+root.config(cursor="none")
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
 
