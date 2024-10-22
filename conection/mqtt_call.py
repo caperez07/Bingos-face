@@ -1,9 +1,15 @@
 import asyncio
-from conection.mqtt_test import send_mqtt
+from mqtt_test import send_mqtt
+
 
 try:
-    # Verifica se já existe um loop de evento em execução
-    loop = asyncio.get_event_loop()
+    # Tenta obter o loop de eventos em execução
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        # Se não houver um loop rodando, cria um novo
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
 
     # Usa nest_asyncio para permitir eventos aninhados, caso seja necessário
     if loop.is_running():
@@ -13,6 +19,6 @@ try:
         asyncio.ensure_future(send_mqtt())
     else:
         # Executa a função MQTT criando um novo loop de eventos
-        asyncio.run(send_mqtt())
+        loop.run_until_complete(send_mqtt())
 except Exception as e:
     print(f"Erro no envio MQTT: {e}")

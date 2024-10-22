@@ -1,45 +1,3 @@
-# import asyncio
-# from gmqtt import Client as MQTTClient
-
-# # Função de callback para quando o cliente se conectar ao broker
-# def on_connect(client, flags, rc, properties):
-#     print('Conectado com sucesso!')
-
-# # Função de callback para quando a mensagem for publicada
-# def on_publish(client, mid):
-#     print(f'Mensagem publicada com sucesso com mid: {mid}')
-
-# def on_message(client, topic, payload, qos, properties):
-#     print(f"Mensagem recebida no tópico {topic}: {payload.decode()}")
-
-# async def send_mqtt():
-#     # Cria o cliente MQTT com um ID único
-#     client = MQTTClient("pedraazul")
-
-#     # Define as funções de callback
-#     client.on_connect = on_connect
-#     client.on_publish = on_publish
-#     client.on_message = on_message
-
-#     # Define o nome de usuário e a senha antes de conectar
-#     client.set_auth_credentials(username='PUBLIC', password='public')
-
-#     try:
-#         # Conecta ao broker público HiveMQ
-#         # await client.connect('broker.hivemq.com', 1883)
-#         await client.connect('smartcampus.maua.br', 1883)
-#         print("conectado")
-
-#         client.subscribe('/test/test/test/testcaio')
-
-#         # Aguarda e mantém a conexão ativa
-#         await asyncio.sleep(60)  # Mantém a conexão por 30 segundos (ou ajuste o tempo)
-#     except Exception as e:
-#         print(f"Erro no envio MQTT: {e}")
-#     finally:
-#         print("Client Disconnect!")
-#         await client.disconnect()
-
 # IMPORTS ---------------------------------------------------------------------
 import paho.mqtt.client as mqtt
 
@@ -96,4 +54,3 @@ def main():
 if __name__ == "__main__":
     main()
 # -----------------------------------------------------------------------------
-
