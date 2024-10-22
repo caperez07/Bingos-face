@@ -1,7 +1,6 @@
 import asyncio
 from mqtt_test import send_mqtt
 
-
 try:
     # Tenta obter o loop de eventos em execução
     try:
