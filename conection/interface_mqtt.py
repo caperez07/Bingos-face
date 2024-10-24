@@ -8,7 +8,7 @@ import time
 
 # MQTT settings
 HOST = "192.168.137.6"
-TOPIC = "bingo-teste"
+TOPIC = "bingo-rosto"
 
 # Define the on_connect callback function for MQTT
 def on_connect(mqttc, obj, flags, rc):
